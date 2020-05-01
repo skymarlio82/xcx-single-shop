@@ -2,7 +2,7 @@ var Sequelize = require("sequelize");
 
 process.env.TZ = 'Asia/Shanghai';
 
-var sequelize = new Sequelize('rest', 'root', 'password', {
+var sequelize = new Sequelize('rest', 'root', '#QAZqaz12', {
 	host: '127.0.0.1',
 	port: '3306',
   dialect: "mysql",

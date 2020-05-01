@@ -1,72 +1,67 @@
-// pages/order/balance/balance.js
-const app = getApp()
+const app = getApp();
+
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
     cartList: [],
     sumMonney: 0,
-    cutid:0,
+    cutid: 0,
     cutMonney: 0,
-    cupNumber:0,
-    model: 0,//1是预约模式  0是到店模式
+    cupNumber: 0,
+    model: 0, // 1是预约模式  0是到店模式
     appointTime: "",
-    cutText:"",
-    cutid:''
+    cutText: "",
+    cutid: ''
   },
-
   onShow: function () {
-    var openid = wx.getStorageSync('openId')
-    this.webSocketHandleMsg(openid, this);
-    this.getMyOrder()
+    var openid = wx.getStorageSync('openId');
+    // this.webSocketHandleMsg(openid, this);
+    this.getMyOrder();
   },
-
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var openid = wx.getStorageSync('openId')
-    this.webSocketInit(openid, this)
+    var openid = wx.getStorageSync('openId');
+    // this.webSocketInit(openid, this);
     if (options.model == 1) {
       this.setData({
         model: 1,
         appointTime: options.appointTime
-      })
+      });
     }
     wx.setNavigationBarTitle({
       title: '订单详情'
-    })
+    });
     this.setData({
       cartList: wx.getStorageSync('cartList'),
       sumMonney: wx.getStorageSync('sumMonney'),
-      cupNumber: wx.getStorageSync('cupNumber'),
-    })
+      cupNumber: wx.getStorageSync('cupNumber')
+    });
   },
-  //长链接
-  webSocketInit: function (openid, that) {
-    wx.connectSocket({
-      url: 'ws://127.0.0.1:8181?token=' + openid,
-    })
-  },
-  webSocketHandleMsg: function (openid, that) {
-    wx.onSocketOpen(function (res) {
-      console.log('WebSocket连接已打开！')
-    })
-    wx.onSocketError(function (res) {
-      console.log('WebSocket连接打开失败，请检查！')
-    })
-    //心跳重连
-    wx.onSocketClose(function (res) {
-      wx.connectSocket({
-        url: 'ws://127.0.0.1:8181?token=' + openid,
-      })
-      console.log('WebSocket 已关闭！')
-    })
-  },
-  onUnload: function () {
-    wx.closeSocket()
-  },
+  // 长链接
+  // webSocketInit: function (openid, that) {
+  //   wx.connectSocket({
+  //     url: 'ws://127.0.0.1:8181?token=' + openid,
+  //   })
+  // },
+  // webSocketHandleMsg: function (openid, that) {
+  //   wx.onSocketOpen(function (res) {
+  //     console.log('WebSocket连接已打开！')
+  //   })
+  //   wx.onSocketError(function (res) {
+  //     console.log('WebSocket连接打开失败，请检查！')
+  //   })
+  //   //心跳重连
+  //   wx.onSocketClose(function (res) {
+  //     wx.connectSocket({
+  //       url: 'ws://127.0.0.1:8181?token=' + openid,
+  //     })
+  //     console.log('WebSocket 已关闭！')
+  //   })
+  // },
+  // onUnload: function () {
+  //   wx.closeSocket()
+  // },
   //获取我的优惠券
   getMyOrder: function () {
     wx.showLoading();
@@ -193,9 +188,9 @@ Page({
         console.log(res.data)
         wx.setStorageSync('orderInfo', res.data.msg);
         wx.setStorageSync('cutMoney', that.data.cutMonney);
-        wx.sendSocketMessage({
-          data: "newOrder"
-        }) 
+        // wx.sendSocketMessage({
+        //   data: "newOrder"
+        // });
         that.useCut()
         wx.hideLoading()
         wx.redirectTo({
