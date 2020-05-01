@@ -235,16 +235,16 @@ page{
   /* border-bottom: 2px solid rgba(9,9,9,1); */
   margin-bottom: 20rpx;
 } 
-.btn {  
+.btn {
   margin: auto;
   width: 15%;  
   padding: 20rpx 0;     
   text-align: center;   
-  color:white; 
+  color: white; 
   position: absolute;
-  right:0px;
-  top:20rpx;
-  opacity: 0;
+  right: 0px;
+  top: 20rpx;
+  opacity: 1;
   /* border-left: 1px solid white; */
 } 
 .btn-ok{

@@ -1,50 +1,36 @@
-/**
- * Created by lupeng on 18/5/20.
- */
-//********************//
-//******优惠券逻辑*****//
-//*******************//
-
-import {sequelize} from '../sql.js'
+import { sequelize } from '../sql.js';
 
 var qn = require('qn');
-var rp = require('request-promise')
-var moment = require('moment')
+var rp = require('request-promise');
+var moment = require('moment');
 var client = qn.create({
-    accessKey: 'MIn8z_veB2LIAFvJtTw5lwUQQxo2Otq8lk8w724r',
-    secretKey: 'j02Smy4yGfggacjF1DE-Q5vl4Ae9pN3ovhLWP6F1',
-    bucket: 'handsomebird',
-
+  accessKey: 'MIn8z_veB2LIAFvJtTw5lwUQQxo2Otq8lk8w724r',
+  secretKey: 'j02Smy4yGfggacjF1DE-Q5vl4Ae9pN3ovhLWP6F1',
+  bucket: 'handsomebird'
 });
 
-
-
-
-//获取用户可领取的优惠券列表
-let getUserCanUseReductionList =async(ctx,next)=>{
-    //获取所有优惠活动
-    let res = await (sequelize.query("select * from `reduction` where status = 1",{
+// 获取用户可领取的优惠券列表
+let getUserCanUseReductionList = async (ctx, next) => {
+    // 获取所有优惠活动
+    let res = await (
+      sequelize.query("select * from `reduction` where status=1", {
         type: sequelize.QueryTypes.SELECT
-    }));
-    //获取用户是否领取过
-    for(let i=0;i<res.length;i++){
-        res[i].endDate=moment(res[i].endDate).format('YYYY-MM-DD');
-        let isR = await (sequelize.query("select * from `mycut` where reduction='"+res[i].id+"' and openid='"+ctx.query.openid+"'",{
-            type: sequelize.QueryTypes.SELECT
-        }));
-        // 如果已经领过
-        if(isR.length>0){
-            res[i].isR=1
-        }else{
-            res[i].isR=0
-        }
+      })
+    );
+    // 获取用户是否领取过
+    for (let i = 0; i < res.length; i++) {
+      res[i].endDate = moment(res[i].endDate).format('YYYY-MM-DD');
+      let isR = await (
+        sequelize.query("select * from `mycut` where reduction='" + res[i].id + "' and openid='" + ctx.query.openid + "'", {
+          type: sequelize.QueryTypes.SELECT
+        })
+      );
+      // 如果已经领过
+      res[i].isR = (isR.length > 0) ? 1 : 0;
     }
+    return ctx.response.body = { code: 0, msg: res };
+};
 
-    return ctx.response.body={
-        "code":0,
-        "msg":res,
-    }
-}
 //领取优惠券
 let getCut =async(ctx,next)=>{
     //接受的参数
@@ -60,44 +46,45 @@ let getCut =async(ctx,next)=>{
     }
 }
 
-
-//用户所有优惠券列表
-let getCutList =async(ctx,next)=>{
-    let box=[]
-    let time_now =moment().format('YYYY-MM-DD HH:mm:ss')
-    //获取我的所有优惠券
-    let res = await (sequelize.query("select * from `mycut` where openid = '"+ctx.query.openid+"'",{
+// 用户所有优惠券列表
+let getCutList = async (ctx, next) => {
+  let box = [];
+  let time_now = moment().format('YYYY-MM-DD HH:mm:ss');
+  // 获取我的所有优惠券
+  let res = await (
+    sequelize.query("select * from `mycut` where openid='" + ctx.query.openid + "'", {
+      type: sequelize.QueryTypes.SELECT
+    })
+  );
+  for (let i = 0; i < res.length; i++) {
+    let iuy = await (
+      sequelize.query("select * from `reduction` where id='" + res[i].reduction + "' and endDate>'" + time_now + "'", {
         type: sequelize.QueryTypes.SELECT
-    }));
-    for(let i=0;i<res.length;i++){
-        let iuy = await (sequelize.query("select * from `reduction` where id = '"+res[i].reduction+"' and endDate >'"+time_now+"'",{
+      })
+    );
+    for (let i = 0; i < iuy.length; i++) {
+      if (iuy[i].type == 2) {
+        let result =  await (
+          sequelize.query("select * from `foods` where id='" + iuy[i].rule + "'", {
             type: sequelize.QueryTypes.SELECT
-        }));
-        for(let i=0;i<iuy.length;i++){
-            if(iuy[i].type==2){
-                let result =  await (sequelize.query("select * from `foods` where id='"+iuy[i].rule+"'",{
-                    type: sequelize.QueryTypes.SELECT
-                }));
-                iuy[i].name=result[0].name
-                iuy[i].img='http://cdn.handsomebird.xin/t'+result[0].type+'-'+result[0].img+'.jpg?imageView2/2/w/144/h/144/format/png/q/75|watermark/2/text/5aWI6Iy25rC05bOw/font/5a6L5L2T/fontsize/240/fill/I0ZGRkZGRg==/dissolve/100/gravity/NorthEast/dx/5/dy/5|imageslim'
-            }
-        }
-        console.log("changdu",iuy.length)
-        if(iuy.length>0){
-            iuy[0].endDate=moment(iuy[0].endDate).format('YYYY-MM-DD');
-            res[i].detail= iuy[0]
-            box.push(res[i])
-        }else{
-            res.splice(i,1)
-        }
+          })
+        );
+        iuy[i].name = result[0].name;
+        iuy[i].img = 'http://q91f46ql6.bkt.clouddn.com/t' + result[0].type + '-' + result[0].img + '.jpg?imageView2/2/w/144/h/144/format/png/q/75|watermark/2/text/5aWI6Iy25rC05bOw/font/5a6L5L2T/fontsize/240/fill/I0ZGRkZGRg==/dissolve/100/gravity/NorthEast/dx/5/dy/5|imageslim';
+      }
     }
-
-    return ctx.response.body={
-        "code":0,
-        "msg":box,
+    if(iuy.length>0){
+    iuy[0].endDate=moment(iuy[0].endDate).format('YYYY-MM-DD');
+    res[i].detail= iuy[0]
+    box.push(res[i])
+    }else{
+    res.splice(i,1)
     }
+  }
+  return ctx.response.body = { code: 0, msg: box };
 };
-//使用优惠券
+
+// 使用优惠券
 let  useCut= async(ctx,next)=>{
     let time = moment().format('YYYY-MM-DD HH:mm:ss')
     let res = await (sequelize.query("UPDATE  `mycut` SET `status`=1, `useTime`='"+time+"'  where id='"+ctx.query.id+"'",{

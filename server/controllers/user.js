@@ -6,7 +6,7 @@ var wxConfig = require('../config/wxConfig');
 var rp = require('request-promise');
 
 // 注册
-let register = async(ctx, next) => {
+let register = async (ctx, next) => {
   // 接受的参数
   let crb = ctx.request.body;
   // 查重
@@ -26,10 +26,9 @@ let register = async(ctx, next) => {
     }
     let time = moment().format('YYYY-MM-DD HH:mm:ss');
     let res = await (
-      sequelize.query("INSERT INTO `user` (`nickName`,`openId`,`avatarUrl`,`province`,`city`,`gender`,`role`,`root`,`resum`,`create_time`,`last_loginTime`) VALUES (" +
-        "'" + crb.nickName + "','" + crb.openId + "','" + crb.avatarUrl + "','" + crb.province + "','" + 
-        crb.city + "','" + crb.gender + "','" + 0 + "','" + 0 + "','" + 
-        0 + "','" + time + "','" + time + "')", {
+      sequelize.query("INSERT INTO `user` (`nickName`,`openId`,`avatarUrl`,`province`,`city`,`gender`,`role`,`root`,`resum`,`create_time`,`last_loginTime`) VALUES ('" +
+        crb.nickName + "','" + crb.openId + "','" + crb.avatarUrl + "','" + crb.province + "','" +
+        crb.city + "','" + crb.gender + "','" + 0 + "','" + 0 + "','" + 0 + "','" + time + "','" + time + "')", {
         type: sequelize.QueryTypes.INSERT
       })
     );
@@ -40,10 +39,10 @@ let register = async(ctx, next) => {
 };
 
 // 登录
-let login = async(ctx, next) => {
+let login = async (ctx, next) => {
   let time = moment().format('YYYY-MM-DD HH:mm:ss');
   await (
-    sequelize.query("UPDATE  `user` SET `last_loginTime`='" + time + "' where openId='" + ctx.query.openId + "'", {
+    sequelize.query("UPDATE `user` SET `last_loginTime`='" + time + "' where openId='" + ctx.query.openId + "'", {
       type: sequelize.QueryTypes.UPDATE
     })
   );
@@ -51,21 +50,21 @@ let login = async(ctx, next) => {
 };
 
 // 获取openid
-let getUserOpenId = async(ctx, next) => {
+let getUserOpenId = async (ctx, next) => {
   // 接受的参数
   if (!ctx.query.code) {
     return ctx.response.body = { code: -2, msg: "参数不完整" };
   }
-  // let crb = ctx.request.body;
-  // let userUniInfo = await rp('https://api.weixin.qq.com/sns/jscode2session?appid=' + wxConfig.AppID +
-  //   '&secret=' + wxConfig.Secret +
-  //   '&js_code=' + ctx.query.code +
-  //   '&grant_type=authorization_code', { dataType: 'json' });
-  // return ctx.response.body = { code: 0, msg: JSON.parse(userUniInfo) };
-  return ctx.response.body = {
-    code: 0, 
-    msg: { openid: 'oOK6t4kx4dm0784rgnI0L5suJEzQ', session_key: 'v+VDW1W5ddVOL1dUK/Ci6w==' },
-  };
+  let crb = ctx.request.body;
+  let userUniInfo = await rp('https://api.weixin.qq.com/sns/jscode2session?appid=' + wxConfig.AppID +
+    '&secret=' + wxConfig.Secret +
+    '&js_code=' + ctx.query.code +
+    '&grant_type=authorization_code', { dataType: 'json' });
+  return ctx.response.body = { code: 0, msg: JSON.parse(userUniInfo) };
+  // return ctx.response.body = {
+  //   code: 0, 
+  //   msg: { openid: 'oOK6t4kx4dm0784rgnI0L5suJEzQ', session_key: 'v+VDW1W5ddVOL1dUK/Ci6w==' },
+  // };
 };
 
 //用户绑定手机号

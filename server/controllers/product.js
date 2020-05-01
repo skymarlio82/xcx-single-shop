@@ -1,14 +1,7 @@
-/**
- * Created by lupeng on 18/5/5.
- */
-
 import {sequelize} from '../sql.js'
 
-
-
-
-//获取菜品列表
-let getfoodList =async(ctx,next)=>{
+// 获取菜品列表
+let getfoodList = async(ctx, next) => {
     let meun = await (sequelize.query("select * from menu",{
         type: sequelize.QueryTypes.SELECT
     }))
@@ -62,28 +55,23 @@ let getfoodList =async(ctx,next)=>{
         "code":0,
         "data":list,
     }
-}
+};
 
-//获取营业时间
-
-let getShopTime =async(ctx,next)=>{
-    let meun = await (sequelize.query("select * from shoptime where id = 1",{
+// 获取营业时间
+let getShopTime = async (ctx, next) => {
+    let meun = await (
+      sequelize.query("select * from shoptime where id=1", {
         type: sequelize.QueryTypes.SELECT
-    }))
-    let list =[];
-    let openTime=9;
-    let closeTime=22;
-    if(meun.length>0){
-        openTime=meun[0].open
-        closeTime = meun[0].close
+      })
+    );
+    let list = [];
+    let openTime = 9;
+    let closeTime = 22;
+    if (meun.length > 0) {
+      openTime = meun[0].open;
+      closeTime = meun[0].close;
     }
-    return ctx.response.body={
-        "code":0,
-        "data":{
-            "openTime":openTime,
-            "closeTime":closeTime
-        },
-    }
+    return ctx.response.body = { code: 0, data: { openTime: openTime, closeTime: closeTime } };
 };
 
 //后台更改营业时间
