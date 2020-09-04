@@ -17,7 +17,7 @@
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "runkoa": "^1.5.9",
-    "sequelize": "^3.27.0",
+    "sequelize": "^6.3.5",
     "ws": "^5.1.1",
     "xml2js": "^0.4.19"
   },
